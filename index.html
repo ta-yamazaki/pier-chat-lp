@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>pier-chat — チームのためのチャットアプリ</title>
+  <style>
+      *, *::before, *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+      }
+
+      :root {
+          --teal: #009688;
+          --teal-dark: #00796b;
+          --teal-light: #e0f2f1;
+          --bg: #fafafa;
+          --text: #212121;
+          --sub: #616161;
+          --card-bg: #ffffff;
+          --radius: 16px;
+          --shadow: 0 4px 24px rgba(0, 0, 0, .08);
+          --device-bg: #6e6e6e;
+          --device-bezel: #8a8a8a;
+          --frame-radius: 36px;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          line-height: 1.6;
+      }
+
+      /* ── Header ── */
+      header {
+          background: var(--teal);
+          color: #fff;
+          text-align: center;
+          padding: 60px 24px;
+      }
+
+      header .logo {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      header .logo .app-icon {
+          width: 120px;
+          height: 120px;
+          border-radius: 20px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+          object-fit: cover;
+          flex-shrink: 0;
+          margin-bottom: 21px;
+      }
+
+      header h1 {
+          font-size: clamp(2rem, 5vw, 3rem);
+          font-weight: 800;
+          letter-spacing: -0.5px;
+      }
+
+      /* ── Download ── */
+      .download-section {
+          background: var(--teal-light);
+          padding: 56px 24px;
+          text-align: center;
+      }
+
+      .download-section h2 {
+          font-size: 1.5rem;
+          color: var(--teal-dark);
+          margin-bottom: 32px;
+      }
+
+      .badges {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 16px;
+      }
+
+      /* Google Play badge (official SVG badge) */
+      .badge-google a,
+      .badge-apple a {
+          display: inline-block;
+          text-decoration: none;
+      }
+
+      .badge-google img,
+      .badge-apple img {
+          height: 54px;
+          display: block;
+      }
+
+      /* Windows / macOS カスタムボタン */
+      .badge-custom a {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          background: var(--card-bg);
+          color: var(--text);
+          border: 2px solid var(--teal);
+          border-radius: 10px;
+          padding: 10px 22px;
+          text-decoration: none;
+          font-size: 0.95rem;
+          font-weight: 600;
+          transition: background .2s, color .2s;
+          height: 54px;
+      }
+
+      .badge-custom a:hover {
+          background: var(--teal);
+          color: #fff;
+      }
+
+      .badge-custom a svg {
+          width: 26px;
+          height: 26px;
+          flex-shrink: 0;
+      }
+
+      .badge-custom .label-top {
+          font-size: 0.65rem;
+          font-weight: 400;
+          opacity: .7;
+          display: block;
+          line-height: 1;
+      }
+
+      .badge-custom .label-main {
+          display: block;
+          line-height: 1.3;
+      }
+
+      /* ── Features ── */
+      .features {
+          max-width: 960px;
+          margin: 64px auto;
+          padding: 0 24px;
+      }
+
+      .features h2 {
+          text-align: center;
+          font-size: 1.75rem;
+          margin-bottom: 40px;
+      }
+
+      .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 24px;
+      }
+
+      .feature-card {
+          background: var(--card-bg);
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          padding: 28px 24px;
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+      }
+
+      .feature-card .icon {
+          font-size: 2rem;
+          line-height: 1;
+          flex-shrink: 0;
+      }
+
+      .feature-card h3 {
+          font-size: 1rem;
+          margin-bottom: 6px;
+      }
+
+      .feature-card p {
+          font-size: 0.88rem;
+          color: var(--sub);
+      }
+
+      /* ── Screenshots ── */
+      .screenshots {
+          background: var(--teal-light);
+          padding: 64px 24px 72px;
+          text-align: center;
+      }
+
+      .screenshots h2 {
+          font-size: 1.75rem;
+          margin-bottom: 48px;
+          color: var(--teal-dark);
+      }
+
+      .screens-row {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          flex-wrap: wrap;
+      }
+
+      .screen-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 14px;
+      }
+
+      .screen-frame {
+          position: relative;
+          width: 200px;
+          border-radius: var(--frame-radius);
+          box-shadow: 0 0 0 4px var(--device-bezel),
+          0 20px 48px rgba(0, 0, 0, .15);
+      }
+
+      .screen-frame::before {
+          content: '';
+          position: absolute;
+          top: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 48px;
+          height: 6px;
+          background: var(--device-bezel);
+          border-radius: 4px;
+          z-index: 2;
+      }
+
+      .screen-frame img {
+          display: block;
+          width: 100%;
+          object-fit: contain;
+          object-position: top;
+          border-radius: var(--frame-radius);
+          background: var(--teal-light);
+      }
+
+      .screen-caption {
+          font-size: 0.82rem;
+          color: var(--sub);
+          font-weight: 500;
+          letter-spacing: .02em;
+      }
+
+      /* ── Footer ── */
+      footer {
+          text-align: center;
+          padding: 40px 24px;
+          font-size: 0.85rem;
+          color: var(--sub);
+      }
+
+      footer a {
+          color: var(--teal);
+          text-decoration: none;
+      }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <!-- Simple pier / anchor icon -->
+    <img src="icon.png" class="app-icon" alt="pier chat"/>
+    <h1>Pier Chat</h1>
+  </div>
+</header>
+
+<!-- ── DOWNLOAD ── -->
+<section class="download-section">
+  <h2>今すぐダウンロード</h2>
+  <div class="badges">
+
+    <!-- Google Play (公式バッジ) -->
+    <div class="badge-google">
+      <a href="#" aria-label="Google Play で手に入れよう">
+        <img
+            src="https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png"
+            alt="Google Play で手に入れよう"
+        />
+      </a>
+    </div>
+
+    <!-- App Store (公式バッジ) -->
+    <div class="badge-apple">
+      <a href="#" aria-label="App Store からダウンロード">
+        <img
+            src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store-jp.svg"
+            alt="App Store からダウンロード"
+        />
+      </a>
+    </div>
+
+    <!-- Windows -->
+    <div class="badge-custom">
+      <a href="#" aria-label="Windows 版をダウンロード">
+        <!-- Windows logo -->
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path
+              d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.799"/>
+        </svg>
+        <span>
+          <span class="label-top">ダウンロード</span>
+          <span class="label-main">Windows</span>
+        </span>
+      </a>
+    </div>
+
+    <!-- macOS -->
+    <div class="badge-custom">
+      <a href="#" aria-label="macOS 版をダウンロード">
+        <!-- Apple logo -->
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path
+              d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+        </svg>
+        <span>
+          <span class="label-top">ダウンロード</span>
+          <span class="label-main">macOS</span>
+        </span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features">
+  <h2>主な機能</h2>
+  <div class="feature-grid">
+
+    <div class="feature-card">
+      <div class="icon">💬</div>
+      <div>
+        <h3>スペース &amp; ルーム</h3>
+        <p>組織やプロジェクトごとにスペースを作成し、トピック別のルームで会話を整理できます。</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">🧵</div>
+      <div>
+        <h3>スレッド返信</h3>
+        <p>メッセージへのスレッド返信でサイド会話。デスクトップではサイドパネルで並行閲覧。</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">😊</div>
+      <div>
+        <h3>リアクション &amp; メンション</h3>
+        <p>絵文字リアクション、@メンションでメンバーへ素早くアクション。</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">🔖</div>
+      <div>
+        <h3>「後で」ブックマーク</h3>
+        <p>重要メッセージをブックマークして進捗管理。完了チェックで仕事漏れをゼロに。</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">📝</div>
+      <div>
+        <h3>ルームノート</h3>
+        <p>ルームに紐づいたメモ・Wiki。共有ノートはメンバー全員が編集できます。</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">🌓</div>
+      <div>
+        <h3>ライト / ダークテーマ</h3>
+        <p>目に優しいダークモードを完全サポート。システム設定に自動追従も可能。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── SCREENSHOTS ── -->
+<section class="screenshots">
+  <h2>スクリーンショット</h2>
+  <div class="screens-row">
+
+    <div class="screen-item">
+      <span class="screen-caption">ルーム一覧</span>
+      <div class="screen-frame">
+        <img src="スクリーンショット_ルーム一覧.png" alt="ルーム一覧"/>
+      </div>
+    </div>
+
+    <div class="screen-item">
+      <span class="screen-caption">チャットルーム</span>
+      <div class="screen-frame">
+        <img src="スクリーンショット_チャットルーム.png" alt="チャットルーム"/>
+      </div>
+    </div>
+
+    <div class="screen-item">
+      <span class="screen-caption">メッセージアクション</span>
+      <div class="screen-frame">
+        <img src="スクリーンショット_メッセージアクション.png" alt="メッセージアクション"/>
+      </div>
+    </div>
+
+    <div class="screen-item">
+      <span class="screen-caption">ルーム詳細</span>
+      <div class="screen-frame">
+        <img src="スクリーンショット_ルーム詳細.png" alt="ルーム詳細"/>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>&copy; 2026 pier-chat. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
